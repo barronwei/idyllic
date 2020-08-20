@@ -25,10 +25,12 @@ function Menu() {
         onChange={handleUpload}
       />
       <FlexGridItem>
-        <Button onClick={() => inputRef.current.click()}>Open Files</Button>
-      </FlexGridItem>
-      <FlexGridItem>
-        <Button onClick={() => setWork(work => !work)}>Workspace</Button>
+        <Button
+          style={{ width: "100%" }}
+          onClick={() => inputRef.current.click()}
+        >
+          Open Files
+        </Button>
       </FlexGridItem>
       <FlexGridItem>
         <Files data={data} />

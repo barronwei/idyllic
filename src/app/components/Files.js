@@ -4,8 +4,10 @@ import React, {
   useCallback,
   useMemo,
   useState,
+  useEffect,
 } from "react"
 
+import { TreeView, toggleIsExpanded } from "baseui/tree-view"
 import transformFileList from "../utils/transformFileList"
 
 // TODO: move to utils
@@ -76,23 +78,27 @@ function Composite({ tree }) {
   )
 }
 
+function Views({ tree }) {
+  const [data, setData] = useState(tree)
+  return (
+    <TreeView
+      data={data}
+      onToggle={node => {
+        setData(prev => toggleIsExpanded(prev, node))
+      }}
+    />
+  )
+}
+
 function Files({ data }) {
   return useMemo(() => {
-    if (data.length === 0) return <div>No Directory</div>
-
+    const none = [{ id: 1, label: "No Directory" }]
+    if (data.length === 0) return <TreeView data={none} />
     const pair = data.map(d => [d.path ?? d.webkitRelativePath, d])
     const dict = Object.fromEntries(pair)
     const fileList = pair.map(([d, _]) => d)
-    const tree = Object.values(transformFileList(fileList))[0]
-    return (
-      <FilesContext.Provider
-        value={{
-          dict,
-        }}
-      >
-        <Composite tree={tree} />
-      </FilesContext.Provider>
-    )
+    const tree = transformFileList(fileList.reverse())
+    return <Views key={data} dict={dict} tree={tree} />
   }, [data])
 }
 

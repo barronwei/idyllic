@@ -10,25 +10,42 @@ function transformFileList(list) {
   })
   const roots = topPath.match(regex, "")
   const rootDir = roots ? roots[0].slice(1) : topPath
-  const df = name => {
-    return { name, dirs: {}, ents: {} }
-  }
-  const dir = { [rootDir]: df(rootDir) }
+
+  let id = 1
+  const final = [{ id, label: rootDir, children: [] }]
 
   array.forEach(path => {
     const abs = path.replace(topPath + "/", "").split("/")
-    let currentDir = dir[rootDir]
+    let dir = final[0].children
     for (const [i, file] of abs.entries()) {
+      id++
+
       if (i === abs.length - 1) {
-        currentDir.ents[file] = { file, path }
+        const el = { id, label: file, path }
+        dir.push(el)
         break
       }
 
-      currentDir = currentDir.dirs[file] = currentDir.dirs[file] ?? df(file)
+      let exists = 0
+
+      for (let [j, { label }] of dir.entries()) {
+        if (file === label) {
+          dir = dir[j].children
+          exists = 1
+        }
+      }
+
+      if (exists) {
+        continue
+      }
+
+      dir.push({ id, label: file, children: [] })
+      const { children: c } = dir[dir.length - 1]
+      dir = c
     }
   })
 
-  return dir
+  return final
 }
 
 module.exports = transformFileList
