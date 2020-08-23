@@ -7,7 +7,10 @@ import useWindow from "../utils/useWindow"
 
 function Space() {
   return (
-    <FlexGrid flexGridColumnCount={3}>
+    <FlexGrid
+      flexGridColumnCount={3}
+      gridTemplateColumns="repeat(auto-fill, minmax(120px, 1fr))"
+    >
       <FlexGridItem>
         <Menu />
       </FlexGridItem>

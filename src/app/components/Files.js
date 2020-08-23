@@ -83,6 +83,7 @@ function Views({ tree }) {
   return (
     <TreeView
       data={data}
+      indentGuides
       onToggle={node => {
         setData(prev => toggleIsExpanded(prev, node))
       }}
