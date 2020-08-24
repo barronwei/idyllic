@@ -1,7 +1,7 @@
 import React from "react"
 import { Space } from "./Space"
 import { Context } from "../reduction/Context"
-import { reducer } from "../reduction/core"
+import { reducer } from "../reduction/reducer"
 import { init } from "../reduction/outline"
 import { useLocalReducer as useLocal } from "../utils/useLocal"
 

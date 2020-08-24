@@ -1,4 +1,4 @@
 import React from "react"
-import { Rap } from "./app/styles/Rap"
+import { Top } from "./app/styles/Top"
 
-export default () => <Rap />
+export default () => <Top />

@@ -1,10 +1,10 @@
 import React from "react"
-import { BaseProvider, LightTheme, DarkTheme } from "baseui"
+import { BaseProvider, LightTheme } from "baseui"
 import { Provider } from "styletron-react"
 import { Engine } from "./Engine"
 import { State } from "../components/State"
 
-function Rap() {
+function Top() {
   return (
     <Provider value={Engine}>
       <BaseProvider theme={LightTheme}>
@@ -14,4 +14,4 @@ function Rap() {
   )
 }
 
-export { Rap }
+export { Top }
