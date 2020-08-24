@@ -1,22 +1,14 @@
 import React, { useCallback, useContext, useMemo, useState } from "react"
 import { TreeView, toggleIsExpanded } from "baseui/tree-view"
-import transformFileList from "../utils/transformFileList"
 import { Context } from "../reduction/Context"
-
-function getFile(f, opener) {
-  const r = new FileReader()
-  r.onload = () => {
-    opener(f.name, r.result)
-  }
-  r.readAsText(f)
-}
+import transformFileList from "../utils/transformFileList"
 
 function Views({ tree, dict }) {
   const { dispatch } = useContext(Context)
   const [data, setData] = useState(tree)
   const opener = useCallback(
-    (name, text) => {
-      dispatch({ type: "ADD_TEXT", payload: { name, text } })
+    name => {
+      dispatch({ type: "ADD_TEXT", payload: { name } })
     },
     [dispatch]
   )
@@ -25,7 +17,7 @@ function Views({ tree, dict }) {
       if (n.children) {
         setData(prev => toggleIsExpanded(prev, n))
       } else {
-        getFile(dict[n.path], opener)
+        opener(n.name)
       }
     },
     [dict, opener]
