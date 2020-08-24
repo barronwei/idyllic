@@ -19,10 +19,10 @@ function transformFileList(list) {
     let dir = final[0].children
     for (const [i, file] of abs.entries()) {
       id++
+      const el = { id, label: file }
 
       if (i === abs.length - 1) {
-        const el = { id, label: file, path }
-        dir.push(el)
+        dir.push({ ...el, path })
         break
       }
 
@@ -39,7 +39,7 @@ function transformFileList(list) {
         continue
       }
 
-      dir.push({ id, label: file, children: [] })
+      dir.push({ ...el, children: [] })
       const { children: c } = dir[dir.length - 1]
       dir = c
     }
