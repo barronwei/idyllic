@@ -4,4 +4,4 @@ function Code() {
   return <div>Empty</div>
 }
 
-export default Code
+export { Code }

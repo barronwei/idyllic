@@ -2,16 +2,16 @@ import React from "react"
 import { BaseProvider, LightTheme, DarkTheme } from "baseui"
 import { Provider } from "styletron-react"
 import { Engine } from "./Engine"
-import Space from "../components/Space"
+import { State } from "../components/State"
 
 function Rap() {
   return (
     <Provider value={Engine}>
       <BaseProvider theme={LightTheme}>
-        <Space />
+        <State />
       </BaseProvider>
     </Provider>
   )
 }
 
-export default Rap
+export { Rap }

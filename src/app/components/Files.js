@@ -1,94 +1,36 @@
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-} from "react"
-
+import React, { useCallback, useContext, useMemo, useState } from "react"
 import { TreeView, toggleIsExpanded } from "baseui/tree-view"
 import transformFileList from "../utils/transformFileList"
+import { Context } from "../reduction/Context"
 
-// TODO: move to utils
-function getFile(f, setData, setLoad) {
+function getFile(f, opener) {
   const r = new FileReader()
   r.onload = () => {
-    setData(r.result)
-    setLoad(false)
-  }
-  r.onloadstart = () => {
-    setLoad(true)
+    opener(f.name, r.result)
   }
   r.readAsText(f)
 }
 
-const FilesContext = createContext()
-
-function Primitive({ unit }) {
-  const { dict } = useContext(FilesContext)
-  const { file, path } = unit
-  const [data, setData] = useState("")
-  const [load, setLoad] = useState(false)
-  const handleFile = useCallback(() => getFile(dict[path], setData, setLoad), [
-    dict,
-    path,
-  ])
-  return (
-    <div
-      border="none"
-      width="100%"
-      leftIcon={"at-sign"}
-      onClick={handleFile}
-      justifyContent="left"
-    >
-      {file}
-    </div>
-  )
-}
-
-function Composite({ tree }) {
-  const [show, setShow] = useState(false)
-  const { dirs: x, ents: y, name } = tree
-
-  const dirs = useMemo(() => {
-    return Object.values(x).map((dir, i) => <Composite key={i} tree={dir} />)
-  }, [x])
-
-  const ents = useMemo(() => {
-    return Object.values(y).map((ent, i) => <Primitive key={i} unit={ent} />)
-  }, [y])
-
-  return (
-    <>
-      <button
-        border="none"
-        width="100%"
-        leftIcon={show ? "chevron-down" : "chevron-right"}
-        onClick={() => setShow(show => !show)}
-        variantColor="teal"
-        variant="outline"
-        justifyContent="left"
-      >
-        {name}
-      </button>
-      {dirs}
-      {ents}
-    </>
-  )
-}
-
-function Views({ tree }) {
+function Views({ tree, dict }) {
+  const { dispatch } = useContext(Context)
   const [data, setData] = useState(tree)
-  return (
-    <TreeView
-      data={data}
-      indentGuides
-      onToggle={node => {
-        setData(prev => toggleIsExpanded(prev, node))
-      }}
-    />
+  const opener = useCallback(
+    (name, text) => {
+      dispatch({ type: "ADD_TEXT", payload: { name, text } })
+    },
+    [dispatch]
   )
+  const handle = useCallback(
+    n => {
+      if (n.children) {
+        setData(prev => toggleIsExpanded(prev, n))
+      } else {
+        getFile(dict[n.path], opener)
+      }
+    },
+    [dict, opener]
+  )
+  return <TreeView data={data} indentGuides onToggle={handle} />
 }
 
 function Files({ data }) {
@@ -98,9 +40,9 @@ function Files({ data }) {
     const pair = data.map(d => [d.path ?? d.webkitRelativePath, d])
     const dict = Object.fromEntries(pair)
     const fileList = pair.map(([d, _]) => d)
-    const tree = transformFileList(fileList.reverse())
-    return <Views key={data} dict={dict} tree={tree} />
+    const tree = transformFileList(fileList)
+    return <Views key={data} tree={tree} dict={dict} />
   }, [data])
 }
 
-export default Files
+export { Files }

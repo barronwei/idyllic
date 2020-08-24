@@ -23,4 +23,4 @@ function useWindow() {
   return dimensions
 }
 
-export default useWindow
+export { useWindow }

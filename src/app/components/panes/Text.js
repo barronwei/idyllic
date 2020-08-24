@@ -1,9 +1,15 @@
-import React from "react"
+import React, { useContext } from "react"
 import Editor from "rich-markdown-editor"
-import { BaseProvider, LightTheme, DarkTheme } from "baseui"
+import { Context } from "../../reduction/Context"
 
-function Text() {
-  return <Editor defaultValue="Hello world!" placeholder="Hello" />
+function Text({ name, text }) {
+  const { dispatch } = useContext(Context)
+  return (
+    <Editor
+      defaultValue={text}
+      onChange={c => dispatch({ type: "change", payload: c() })}
+    />
+  )
 }
 
-export default Text
+export { Text }
