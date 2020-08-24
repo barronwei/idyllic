@@ -1,25 +1,59 @@
-import React, { useCallback, useRef } from "react"
+import React, {
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+} from "react"
 import { Button } from "baseui/button"
 import { FlexGrid, FlexGridItem } from "baseui/flex-grid"
 import { FileUploader } from "baseui/file-uploader"
 import { Files } from "../Files"
-import { useLocalStorage as useLocal } from "../../utils/useLocal"
+import { Context } from "../../reduction/Context"
+
+function getFiles(fs, setLoad, setDirs) {
+  setLoad(load => !load)
+  const arr = Array.from(fs)
+  let counter = arr.length
+  arr.forEach(f => {
+    const r = new FileReader()
+    r.onload = () => {
+      counter -= 1
+      const { name, path, webkitRelativePath } = f
+      setDirs(x => [...x, { name, path, webkitRelativePath, data: r.result }])
+      if (!counter) setLoad(load => !load)
+    }
+    r.readAsText(f)
+  })
+}
 
 function Menu() {
+  const {
+    state: { files },
+    dispatch,
+  } = useContext(Context)
+  const [load, setLoad] = useState(false)
+  const [dirs, setDirs] = useState([])
+
   const inputRef = useRef(null)
-  const [data, setData] = useLocal("files", [])
   const handleUpload = useCallback(
     e => {
-      setData(Array.from(e))
+      getFiles(e, setLoad, setDirs)
     },
-    [setData]
+    [setLoad, setDirs]
   )
+
+  useEffect(() => {
+    if (!load) dispatch({ type: "ADD_FILE", payload: { files: dirs } })
+    if (!load) console.log(dirs)
+  }, [dispatch, load, dirs])
+
   return (
     <FlexGrid flexGridColumnCount={1}>
       <FlexGridItem>
         <FileUploader
-          onDrop={(acceptedFiles, rejectedFiles) => {
-            handleUpload(acceptedFiles)
+          onDrop={(f, _) => {
+            handleUpload(f)
           }}
           multiple
           overrides={{
@@ -44,7 +78,7 @@ function Menu() {
         </Button>
       </FlexGridItem>
       <FlexGridItem>
-        <Files data={data} />
+        <Files data={files} />
       </FlexGridItem>
     </FlexGrid>
   )
