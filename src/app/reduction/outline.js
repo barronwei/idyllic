@@ -1,5 +1,6 @@
 export const init = {
   files: [],
-  codes: [],
   texts: [],
+  codes: [],
+  loads: [],
 }
