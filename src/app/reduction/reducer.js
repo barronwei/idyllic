@@ -2,13 +2,18 @@ function reducer(state, action) {
   switch (action.type) {
     case "ADD_TEXT":
       const { name, text } = action.payload
-      console.log({ name, text })
       return { ...state, texts: state.texts.concat([{ name, text }]) }
     case "REM_TEXT":
       const { name: n } = action.payload
       return {
         ...state,
         texts: state.texts.filter(({ name }) => name !== n),
+      }
+    case "ADD_FILE":
+      const { files } = action.payload
+      return {
+        ...state,
+        files,
       }
     default:
       return state
