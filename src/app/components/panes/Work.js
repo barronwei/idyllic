@@ -12,8 +12,8 @@ function Work() {
     <FlexGrid flexGridColumnCount={2}>
       {texts.map((t, i) => {
         return (
-          <FlexGridItem key={i} {...t}>
-            <Text />
+          <FlexGridItem key={i}>
+            <Text {...t} />
           </FlexGridItem>
         )
       })}
