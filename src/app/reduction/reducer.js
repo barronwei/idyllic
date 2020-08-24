@@ -1,23 +1,35 @@
 function reducer(state, action) {
-  switch (action.type) {
-    case "ADD_TEXT":
-      const { name, text } = action.payload
-      return { ...state, texts: state.texts.concat([{ name, text }]) }
-    case "REM_TEXT":
-      const { name: n } = action.payload
-      return {
-        ...state,
-        texts: state.texts.filter(({ name }) => name !== n),
-      }
-    case "ADD_FILE":
-      const { files } = action.payload
-      return {
-        ...state,
-        files,
-      }
-    default:
-      return state
+  const { type, payload } = action
+  let res = { ...state }
+  switch (type) {
+    case "ADD_FILE": {
+      const { files } = payload
+      res = { ...state, files }
+      break
+    }
+
+    case "ADD_TEXT": {
+      const { files, texts } = state
+      const { names } = payload
+      const lambda = ({ path }) => path === names
+      const opened = texts.filter(lambda)
+      const exists = files.filter(lambda)
+      if (opened.length === 0 || !exists) break
+      const trans = [...texts, ...exists]
+      res = { ...state, texts: trans }
+      break
+    }
+
+    case "REM_TEXT": {
+      const { texts } = state
+      const { names } = payload
+      const lambda = ({ name }) => name !== names
+      res = { ...state, texts: texts.filter(lambda) }
+      break
+    }
   }
+
+  return res
 }
 
 export { reducer }
