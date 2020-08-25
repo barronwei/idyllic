@@ -5,11 +5,11 @@ import { Work } from "./panes/Work"
 
 function Space() {
   return (
-    <FlexGrid>
-      <FlexGridItem>
+    <FlexGrid flexGridColumnCount={2}>
+      <FlexGridItem flex={1}>
         <Menu />
       </FlexGridItem>
-      <FlexGridItem>
+      <FlexGridItem flex={10}>
         <Work />
       </FlexGridItem>
     </FlexGrid>
