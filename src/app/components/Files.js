@@ -1,14 +1,14 @@
 import React, { useCallback, useContext, useMemo, useState } from "react"
 import { TreeView, toggleIsExpanded } from "baseui/tree-view"
 import { Context } from "../reduction/Context"
-import transformFileList from "../utils/transformFileList"
+import { transformFileList } from "../utils/transformFileList"
 
-function Views({ tree, dict }) {
+function Views({ tree }) {
   const { dispatch } = useContext(Context)
   const [data, setData] = useState(tree)
   const opener = useCallback(
-    name => {
-      dispatch({ type: "ADD_TEXT", payload: { name } })
+    names => {
+      dispatch({ type: "ADD_LOAD", payload: { names } })
     },
     [dispatch]
   )
@@ -17,10 +17,10 @@ function Views({ tree, dict }) {
       if (n.children) {
         setData(prev => toggleIsExpanded(prev, n))
       } else {
-        opener(n.name)
+        opener(n.path)
       }
     },
-    [dict, opener]
+    [opener]
   )
   return <TreeView data={data} indentGuides onToggle={handle} />
 }
@@ -29,11 +29,9 @@ function Files({ data }) {
   return useMemo(() => {
     const none = [{ id: 1, label: "No Directory" }]
     if (data.length === 0) return <TreeView data={none} />
-    const pair = data.map(d => [d.path ?? d.webkitRelativePath, d])
-    const dict = Object.fromEntries(pair)
-    const fileList = pair.map(([d, _]) => d)
+    const fileList = data.map(d => d.path ?? d.webkitRelativePath)
     const tree = transformFileList(fileList)
-    return <Views key={data} tree={tree} dict={dict} />
+    return <Views key={data} tree={tree} />
   }, [data])
 }
 
