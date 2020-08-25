@@ -1,7 +1,8 @@
-const transformFileList = require("../app/utils/transformFileList")
+import { transformFileList } from "../app/utils/transformFileList"
 
 test("transformFileList single", () => {
-  expect(transformFileList(["a/b/c/d.js"])).toEqual([
+  const list = ["a/b/c/d.js"]
+  expect(transformFileList(list)).toEqual([
     {
       id: 1,
       label: "c",
@@ -17,9 +18,8 @@ test("transformFileList single", () => {
 })
 
 test("transformFileList folder", () => {
-  expect(
-    transformFileList(["a/b/c/d.js", "a/b/e/f.js", "a/b/g.js", "a/b/h.js"])
-  ).toEqual([
+  const list = ["a/b/c/d.js", "a/b/e/f.js", "a/b/g.js", "a/b/h.js"]
+  expect(transformFileList(list)).toEqual([
     {
       id: 1,
       label: "b",

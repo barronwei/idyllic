@@ -48,4 +48,4 @@ function transformFileList(list) {
   return final
 }
 
-module.exports = transformFileList
+export { transformFileList }
