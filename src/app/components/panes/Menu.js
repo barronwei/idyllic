@@ -10,6 +10,8 @@ import { FlexGrid, FlexGridItem } from "baseui/flex-grid"
 import { FileUploader } from "baseui/file-uploader"
 import { Files } from "../Files"
 import { Context } from "../../reduction/Context"
+import { useLocalStorage as useLocal } from "../../utils/useLocal"
+import { encode } from "../../utils/encoding"
 
 function getFiles(fs, setLoad, setDirs) {
   setLoad(load => !load)
@@ -19,8 +21,11 @@ function getFiles(fs, setLoad, setDirs) {
     const r = new FileReader()
     r.onload = () => {
       counter -= 1
-      const { name, path, webkitRelativePath } = f
-      setDirs(x => [...x, { name, path, webkitRelativePath, data: r.result }])
+      const { name, path, webkitRelativePath, type } = f
+      setDirs(x => [
+        ...x,
+        { name, path, webkitRelativePath, type, data: encode(r.result) },
+      ])
       if (!counter) setLoad(load => !load)
     }
     r.readAsText(f)
@@ -33,11 +38,12 @@ function Menu() {
     dispatch,
   } = useContext(Context)
   const [load, setLoad] = useState(false)
-  const [dirs, setDirs] = useState([])
+  const [dirs, setDirs] = useLocal("files", [])
 
   const inputRef = useRef(null)
   const handleUpload = useCallback(
     e => {
+      setDirs([])
       getFiles(e, setLoad, setDirs)
     },
     [setLoad, setDirs]
@@ -45,7 +51,6 @@ function Menu() {
 
   useEffect(() => {
     if (!load) dispatch({ type: "ADD_FILE", payload: { files: dirs } })
-    if (!load) console.log(dirs)
   }, [dispatch, load, dirs])
 
   return (
